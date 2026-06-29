@@ -43,7 +43,7 @@ export const SHOWS: Show[] = [
     network: "NBC",
     startYear: 1994,
     status: "ended",
-    justWatchSlug: "friends",
+    justWatchSlug: "friends-1994",
     keywords: keywords("friends"),
   },
   {
@@ -87,7 +87,7 @@ export const SHOWS: Show[] = [
     network: "NBC",
     startYear: 1993,
     status: "ended",
-    justWatchSlug: "frasier-1993",
+    justWatchSlug: "frasier",
     keywords: keywords("frasier"),
   },
   {
