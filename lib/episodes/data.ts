@@ -145,6 +145,17 @@ export const SHOWS: Show[] = [
     justWatchSlug: "the-simpsons",
     keywords: keywords("simpsons"),
   },
+  {
+    slug: "peep-show",
+    title: "Peep Show",
+    description:
+      "Socially awkward flatmates Mark and Jeremy stumble through life in Croydon, with the camera — and the audience — privy to their unfiltered inner monologues.",
+    network: "Channel 4",
+    startYear: 2003,
+    status: "ended",
+    justWatchSlug: "peep-show",
+    keywords: keywords("peep show"),
+  },
 ];
 
 /**
