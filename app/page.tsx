@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 import { getAllShows } from "@/lib/episodes";
 import { buttonVariants } from "@/components/ui/button";
+import { TrackedLink } from "@/components/tracked-link";
 import { cn } from "@/lib/utils";
 
 // Static by default — the home page has no dynamic data, so it's prerendered
@@ -37,7 +37,9 @@ export default function HomePage() {
         <ul className="flex flex-col gap-3">
           {shows.map((show) => (
             <li key={show.slug}>
-              <Link
+              <TrackedLink
+                event="show_select"
+                data={{ show: show.slug }}
                 href={`/${show.slug}`}
                 className={cn(
                   buttonVariants({ variant: "outline", size: "lg" }),
@@ -49,7 +51,7 @@ export default function HomePage() {
                   className="transition-transform group-hover:translate-x-1"
                   aria-hidden
                 />
-              </Link>
+              </TrackedLink>
             </li>
           ))}
         </ul>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Shuffle } from "lucide-react";
 
@@ -12,6 +11,7 @@ import {
 } from "@/lib/episodes";
 import { siteConfig } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
+import { TrackedLink } from "@/components/tracked-link";
 import { EpisodeCard } from "@/components/episode-card";
 import { WhereToWatch } from "@/components/where-to-watch";
 import { buttonVariants } from "@/components/ui/button";
@@ -92,13 +92,15 @@ export default async function EpisodePage({
       />
 
       <nav className="w-full">
-        <Link
+        <TrackedLink
+          event="back_to_show"
+          data={{ show: show.slug }}
           href={`/${show.slug}`}
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft aria-hidden className="size-4" />
           {show.title}
-        </Link>
+        </TrackedLink>
       </nav>
 
       <header className="text-center">
@@ -115,13 +117,15 @@ export default async function EpisodePage({
 
       <WhereToWatch show={show} season={episode.season} />
 
-      <Link
+      <TrackedLink
+        event="pick_another_episode"
+        data={{ show: show.slug }}
         href={`/${show.slug}`}
         className={cn(buttonVariants({ size: "lg" }))}
       >
         <Shuffle aria-hidden />
         Pick another episode
-      </Link>
+      </TrackedLink>
     </main>
   );
 }

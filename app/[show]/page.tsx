@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { getAllShows, getShow, getEpisodes } from "@/lib/episodes";
 import { siteConfig } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
+import { TrackedLink } from "@/components/tracked-link";
 import { RandomEpisode } from "@/components/random-episode";
 import {
   breadcrumbJsonLd,
@@ -79,13 +79,15 @@ export default async function ShowPage({
       />
 
       <nav className="w-full">
-        <Link
+        <TrackedLink
+          event="back_all_shows"
+          data={{ show: show.slug }}
           href="/"
           className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft aria-hidden className="size-4" />
           All shows
-        </Link>
+        </TrackedLink>
       </nav>
 
       <header className="flex flex-col items-center gap-4 text-center">

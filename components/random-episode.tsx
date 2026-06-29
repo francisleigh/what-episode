@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { Shuffle } from "lucide-react";
+import { track } from "@vercel/analytics";
 
 import { pickRandomEpisode, type Episode, type Show } from "@/lib/episodes";
 import { Button } from "@/components/ui/button";
@@ -41,6 +42,12 @@ export function RandomEpisode({
     shuffle();
   }, [shuffle]);
 
+  // Track only user-initiated reshuffles, not the on-mount first pick.
+  const handleReshuffle = useCallback(() => {
+    track("reshuffle", { show: show.slug });
+    shuffle();
+  }, [shuffle, show.slug]);
+
   return (
     <div className="flex w-full flex-col items-center gap-8">
       {current ? (
@@ -49,7 +56,7 @@ export function RandomEpisode({
         <EpisodeCardSkeleton />
       )}
 
-      <Button size="lg" onClick={shuffle} disabled={episodes.length === 0}>
+      <Button size="lg" onClick={handleReshuffle} disabled={episodes.length === 0}>
         <Shuffle aria-hidden />
         Reshuffle
       </Button>

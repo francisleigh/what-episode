@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { Clock } from "lucide-react";
 
 import { episodeSlug, type Episode } from "@/lib/episodes";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { TrackedLink } from "@/components/tracked-link";
 import { cn } from "@/lib/utils";
 
 /**
@@ -29,12 +29,14 @@ export function EpisodeCard({
             </span>
           ) : null}
         </div>
-        <Link
+        <TrackedLink
+          event="episode_title_click"
+          data={{ show: episode.showSlug, episode: episodeSlug(episode) }}
           href={`/${episode.showSlug}/${episodeSlug(episode)}`}
           className="text-3xl font-semibold leading-tight tracking-tight underline-offset-4 hover:underline sm:text-4xl"
         >
           {episode.title}
-        </Link>
+        </TrackedLink>
       </CardHeader>
       {episode.description ? (
         <CardContent>

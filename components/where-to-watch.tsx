@@ -7,6 +7,7 @@ import {
   justWatchSeriesUrl,
 } from "@/lib/justwatch";
 import { buttonVariants } from "@/components/ui/button";
+import { TrackedLink } from "@/components/tracked-link";
 import { cn } from "@/lib/utils";
 
 /**
@@ -41,7 +42,10 @@ export function WhereToWatch({
         Where to watch
       </h2>
 
-      <a
+      <TrackedLink
+        external
+        event="justwatch_click"
+        data={{ show: show.slug, season: season ?? null }}
         href={primaryUrl}
         target="_blank"
         rel="noopener noreferrer"
@@ -49,17 +53,20 @@ export function WhereToWatch({
       >
         <ExternalLink aria-hidden />
         {season ? `Watch Season ${season} on JustWatch` : "Find it on JustWatch"}
-      </a>
+      </TrackedLink>
 
       {seasonUrl && seriesUrl ? (
-        <a
+        <TrackedLink
+          external
+          event="browse_all_seasons"
+          data={{ show: show.slug }}
           href={seriesUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="text-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
         >
           Browse all seasons
-        </a>
+        </TrackedLink>
       ) : null}
 
       <p className="text-xs text-muted-foreground">
