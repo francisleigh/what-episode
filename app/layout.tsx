@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
+  appleWebApp: { title: "W/EP" },
   keywords: [
     "what episode should I watch",
     "random episode generator",
