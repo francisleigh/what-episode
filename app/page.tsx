@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 
-import { getAllShows } from "@/lib/episodes";
+import { getAllShows, getEpisodeIndex } from "@/lib/episodes";
+import { FullRandomButton } from "@/components/full-random-button";
 import { buttonVariants } from "@/components/ui/button";
 import { TrackedLink } from "@/components/tracked-link";
 import { cn } from "@/lib/utils";
@@ -9,6 +10,7 @@ import { cn } from "@/lib/utils";
 // at build time and served from the edge cache.
 export default function HomePage() {
   const shows = getAllShows();
+  const episodeIndex = getEpisodeIndex();
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col items-center justify-center gap-12 px-6 py-20 text-center">
@@ -26,6 +28,8 @@ export default function HomePage() {
           at random, instantly.
         </p>
       </header>
+
+      <FullRandomButton episodeIndex={episodeIndex} />
 
       <section aria-labelledby="shows-heading" className="w-full">
         <h2
