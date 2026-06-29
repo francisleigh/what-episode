@@ -96,8 +96,7 @@ export default async function ShowPage({
           Random {show.title} Episode
         </h1>
         <p className="max-w-xl text-balance text-lg text-muted-foreground">
-          Not sure what {show.title} episode to watch? Here&apos;s one to try —
-          reshuffle for another.
+          {`Not sure what ${show.title} episode to watch? Here's one to try — reshuffle for another.`}
         </p>
       </header>
 
