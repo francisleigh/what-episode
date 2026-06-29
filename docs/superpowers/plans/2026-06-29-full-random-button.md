@@ -14,7 +14,7 @@
 - Button is the primary variant (`default` — filled white-on-black), `size="lg"`, full width (`w-full`), `Dices` icon, label exactly `Surprise me`.
 - Randomness: pick a show uniformly, then an episode uniformly within that show (equal chance per show — do NOT pick uniformly over all episodes).
 - Analytics event name is exactly `full_random` with payload `{ show, episode }`.
-- Reuse the existing `episodeSlug` helper; do not otherwise modify the data layer.
+- Reuse the existing `episodeSlug` helper. The only data-layer additions are `pickRandomShowEpisode` and `getEpisodeIndex` (Task 1); the index-building logic lives ONLY in `getEpisodeIndex` — never inline it in `app/page.tsx` or the route.
 - Episode slug format is `s${season}e${episode}` (e.g. `s3e4`), produced by `episodeSlug`.
 - Code comments kept to a minimum (only non-obvious reasons), per repo policy.
 - Every commit message ends with: `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`
@@ -28,8 +28,10 @@
 - Test: `lib/episodes/full-random.test.ts` (create)
 
 **Interfaces:**
-- Consumes: nothing from other tasks.
-- Produces: `pickRandomShowEpisode(index: Record<string, string[]>, rng?: () => number): { show: string; episode: string } | null` — exported from `@/lib/episodes`. Task 2 imports it.
+- Consumes: existing `getAllShows`, `getEpisodes`, `episodeSlug` from the same module.
+- Produces (both exported from `@/lib/episodes`, consumed by Tasks 2 and 3):
+  - `pickRandomShowEpisode(index: Record<string, string[]>, rng?: () => number): { show: string; episode: string } | null`
+  - `getEpisodeIndex(): Record<string, string[]>` — the single source of truth for the show→episode-slug map used by both the home-page button and the `/surprise-me` route.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -38,7 +40,12 @@ Create `lib/episodes/full-random.test.ts`:
 ```ts
 import { test, expect } from "bun:test";
 
-import { pickRandomShowEpisode } from "./index";
+import {
+  getAllShows,
+  getEpisodes,
+  getEpisodeIndex,
+  pickRandomShowEpisode,
+} from "./index";
 
 /** Deterministic rng: returns the given values in order, then cycles. */
 function seq(values: number[]): () => number {
@@ -67,12 +74,27 @@ test("the picked episode belongs to the picked show", () => {
 test("returns null for an empty index", () => {
   expect(pickRandomShowEpisode({}, seq([0]))).toBeNull();
 });
+
+test("getEpisodeIndex maps every show slug to its episode slugs", () => {
+  const index = getEpisodeIndex();
+  const shows = getAllShows();
+  expect(Object.keys(index).sort()).toEqual(shows.map((s) => s.slug).sort());
+  for (const show of shows) {
+    expect(index[show.slug].length).toBe(getEpisodes(show.slug).length);
+  }
+});
+
+test("getEpisodeIndex values are well-formed episode slugs", () => {
+  const all = Object.values(getEpisodeIndex()).flat();
+  expect(all.length).toBeGreaterThan(0);
+  expect(all.every((slug) => /^s\d+e\d+$/.test(slug))).toBe(true);
+});
 ```
 
 - [ ] **Step 2: Run the test to verify it fails**
 
 Run: `bun test lib/episodes/full-random.test.ts`
-Expected: FAIL — `pickRandomShowEpisode` is not exported / not a function.
+Expected: FAIL — `pickRandomShowEpisode` / `getEpisodeIndex` not exported.
 
 - [ ] **Step 3: Write the minimal implementation**
 
@@ -97,12 +119,22 @@ export function pickRandomShowEpisode(
   const episode = episodes[Math.floor(rng() * episodes.length)];
   return { show, episode };
 }
+
+/**
+ * Compact show→episode-slug index for the full-random pickers. The single
+ * definition shared by the home-page button and the /surprise-me route.
+ */
+export function getEpisodeIndex(): Record<string, string[]> {
+  return Object.fromEntries(
+    getAllShows().map((s) => [s.slug, getEpisodes(s.slug).map(episodeSlug)]),
+  );
+}
 ```
 
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `bun test lib/episodes/full-random.test.ts`
-Expected: PASS — 3 pass, 0 fail.
+Expected: PASS — 5 pass, 0 fail.
 
 - [ ] **Step 5: Type-check**
 
@@ -113,7 +145,7 @@ Expected: no output, exit 0.
 
 ```bash
 git add lib/episodes/index.ts lib/episodes/full-random.test.ts
-git commit -m "feat(random): add pure full-random show+episode picker
+git commit -m "feat(random): add full-random picker and episode index helper
 
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 ```
@@ -127,7 +159,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Modify: `app/page.tsx` (imports + render the button between `<header>` and the shows `<section>`)
 
 **Interfaces:**
-- Consumes: `pickRandomShowEpisode` from `@/lib/episodes` (Task 1); `getEpisodes`, `episodeSlug`, `getAllShows` from `@/lib/episodes`; `Button` from `@/components/ui/button`.
+- Consumes: `pickRandomShowEpisode`, `getAllShows`, `getEpisodeIndex` from `@/lib/episodes` (Task 1); `Button` from `@/components/ui/button`.
 - Produces: `<FullRandomButton episodeIndex={Record<string, string[]>} />` (default export not used; named export `FullRandomButton`).
 
 - [ ] **Step 1: Create the client component**
@@ -192,16 +224,14 @@ import { getAllShows } from "@/lib/episodes";
 with:
 
 ```tsx
-import { getAllShows, getEpisodes, episodeSlug } from "@/lib/episodes";
+import { getAllShows, getEpisodeIndex } from "@/lib/episodes";
 import { FullRandomButton } from "@/components/full-random-button";
 ```
 
 Inside `HomePage`, after `const shows = getAllShows();`, add:
 
 ```tsx
-  const episodeIndex = Object.fromEntries(
-    shows.map((s) => [s.slug, getEpisodes(s.slug).map(episodeSlug)]),
-  );
+  const episodeIndex = getEpisodeIndex();
 ```
 
 Then insert the button between the closing `</header>` and the opening
@@ -252,7 +282,7 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Modify: `app/robots.ts` (add `disallow` for the redirector)
 
 **Interfaces:**
-- Consumes: `getAllShows`, `getEpisodes`, `episodeSlug`, `pickRandomShowEpisode` from `@/lib/episodes` (Task 1).
+- Consumes: `getEpisodeIndex`, `pickRandomShowEpisode` from `@/lib/episodes` (Task 1).
 - Produces: a `GET /surprise-me` endpoint that 307-redirects to `/[show]/sNeM`.
 
 - [ ] **Step 1: Create the route handler**
@@ -262,22 +292,14 @@ Create `app/surprise-me/route.ts`:
 ```ts
 import { redirect } from "next/navigation";
 
-import {
-  episodeSlug,
-  getAllShows,
-  getEpisodes,
-  pickRandomShowEpisode,
-} from "@/lib/episodes";
+import { getEpisodeIndex, pickRandomShowEpisode } from "@/lib/episodes";
 
 // Per-request so each visit redirects to a different random episode; a cached
 // response would pin everyone to one episode.
 export const dynamic = "force-dynamic";
 
 export function GET() {
-  const index = Object.fromEntries(
-    getAllShows().map((s) => [s.slug, getEpisodes(s.slug).map(episodeSlug)]),
-  );
-  const pick = pickRandomShowEpisode(index);
+  const pick = pickRandomShowEpisode(getEpisodeIndex());
   redirect(pick ? `/${pick.show}/${pick.episode}` : "/");
 }
 ```
@@ -337,8 +359,8 @@ Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>"
 - Stays static / no dynamic route / PWA-offline → Global Constraints + Task 2, Step 4. ✓
 - Uniform over shows then episodes → Task 1 impl + tests. ✓
 - Analytics `full_random` `{ show, episode }` → Task 2, Step 1. ✓
-- Reuse `episodeSlug`, no other data-layer change → Task 2, Step 2 + Task 3, Step 1. ✓
-- `/surprise-me` server redirect, `force-dynamic`, shares `pickRandomShowEpisode`, only dynamic route → Task 3. ✓
+- Index-building DRY: defined once in `getEpisodeIndex` (Task 1), consumed by both `app/page.tsx` (Task 2) and the route (Task 3) — no inline duplication. ✓
+- `/surprise-me` server redirect, `force-dynamic`, shares `pickRandomShowEpisode` + `getEpisodeIndex`, only dynamic route → Task 3. ✓
 - Crawler treatment (`robots.ts` disallow), no sitemap change → Task 3, Step 2. ✓
 - Edge case empty index → Task 1 (returns null) + Task 2 (`disabled`, early return) + Task 3 (`redirect("/")` fallback). ✓
 
