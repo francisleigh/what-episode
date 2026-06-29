@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
 
 import { getAllShows, getShow, getEpisodes } from "@/lib/episodes";
+import { siteConfig } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
 import { RandomEpisode } from "@/components/random-episode";
 import {
@@ -44,8 +45,14 @@ export async function generateMetadata({
       title,
       description,
       url: `/${show.slug}`,
+      images: [siteConfig.ogImage],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [siteConfig.ogImage],
+    },
   };
 }
 

@@ -13,7 +13,7 @@ export const siteConfig = {
     /\/$/,
     "",
   ),
-  ogImage: "/opengraph-image",
+  ogImage: "/opengraph-image.png",
   twitter: "@whatepisode",
 } as const;
 

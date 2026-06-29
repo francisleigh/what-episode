@@ -10,6 +10,7 @@ import {
   getEpisodes,
   getShow,
 } from "@/lib/episodes";
+import { siteConfig } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
 import { EpisodeCard } from "@/components/episode-card";
 import { WhereToWatch } from "@/components/where-to-watch";
@@ -55,8 +56,14 @@ export async function generateMetadata({
       title,
       description,
       url: `/${show.slug}/${epSlug}`,
+      images: [siteConfig.ogImage],
     },
-    twitter: { card: "summary_large_image", title, description },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [siteConfig.ogImage],
+    },
   };
 }
 
