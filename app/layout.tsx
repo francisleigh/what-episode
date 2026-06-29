@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Doto } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 
 import { siteConfig } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
 import { SiteFooter } from "@/components/site-footer";
+import { ServiceWorker } from "@/components/service-worker";
 import { websiteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
-  appleWebApp: { title: "W/EP" },
+  appleWebApp: { capable: true, title: "W/EP", statusBarStyle: "black" },
   keywords: [
     "what episode should I watch",
     "random episode generator",
@@ -56,6 +57,14 @@ export const metadata: Metadata = {
   },
 };
 
+// Drives <meta name="theme-color"> so the mobile browser/PWA chrome matches the
+// app's black background. width/initialScale repeat Next's defaults explicitly.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#000000",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -66,6 +75,7 @@ export default function RootLayout({
         {children}
         <SiteFooter />
         <Analytics />
+        <ServiceWorker />
       </body>
     </html>
   );
