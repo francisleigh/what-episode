@@ -12,6 +12,7 @@ import {
 } from "@/lib/episodes";
 import { JsonLd } from "@/components/json-ld";
 import { EpisodeCard } from "@/components/episode-card";
+import { WhereToWatch } from "@/components/where-to-watch";
 import { buttonVariants } from "@/components/ui/button";
 import { breadcrumbJsonLd, episodeJsonLd } from "@/lib/seo";
 import { cn } from "@/lib/utils";
@@ -105,22 +106,7 @@ export default async function EpisodePage({
 
       <EpisodeCard episode={episode} />
 
-      {/* Where to watch — placeholder until streaming data is wired up. */}
-      <section
-        aria-labelledby="watch-heading"
-        className="w-full max-w-xl rounded-xl border border-dashed border-border p-6 text-center"
-      >
-        <h2
-          id="watch-heading"
-          className="text-xs uppercase tracking-[0.3em] text-muted-foreground"
-        >
-          Where to watch
-        </h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          {/* TODO(streaming): render `episode.streamingLinks` (JustWatch / affiliate). */}
-          Streaming availability coming soon.
-        </p>
-      </section>
+      <WhereToWatch show={show} season={episode.season} />
 
       <Link
         href={`/${show.slug}`}

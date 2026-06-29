@@ -3,9 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Shuffle } from "lucide-react";
 
-import { pickRandomEpisode, type Episode } from "@/lib/episodes";
+import { pickRandomEpisode, type Episode, type Show } from "@/lib/episodes";
 import { Button } from "@/components/ui/button";
 import { EpisodeCard } from "@/components/episode-card";
+import { WhereToWatch } from "@/components/where-to-watch";
 
 /**
  * Client island that owns the random-selection interaction.
@@ -14,7 +15,13 @@ import { EpisodeCard } from "@/components/episode-card";
  * client *after mount* — this keeps the host page statically rendered and avoids
  * hydration mismatches, while isolating all non-determinism to this component.
  */
-export function RandomEpisode({ episodes }: { episodes: Episode[] }) {
+export function RandomEpisode({
+  episodes,
+  show,
+}: {
+  episodes: Episode[];
+  show: Show;
+}) {
   const [current, setCurrent] = useState<Episode | null>(null);
 
   const shuffle = useCallback(() => {
@@ -47,8 +54,7 @@ export function RandomEpisode({ episodes }: { episodes: Episode[] }) {
         Reshuffle
       </Button>
 
-      {/* TODO(streaming): surface `current.streamingLinks` here as "Where to watch"
-          badges (JustWatch / affiliate deep links) once the data is wired up. */}
+      {current ? <WhereToWatch show={show} season={current.season} /> : null}
     </div>
   );
 }

@@ -41,8 +41,19 @@ export interface Show {
   description: string;
   /** Originating network/streamer — handy for "Where to watch" and JSON-LD. */
   network?: string;
+  /**
+   * Production status. Drives the refresh cron: only "running" shows are
+   * re-fetched from TMDB on a schedule (ended shows never gain episodes).
+   */
+  status: "running" | "ended";
   /** First air year — feeds JSON-LD `startDate` and disambiguates reboots. */
   startYear?: number;
+  /**
+   * JustWatch title slug used to build "Where to watch" deep links, e.g.
+   * "the-office-2005" → justwatch.com/uk/tv-series/the-office-2005. URLs are
+   * derived from this in `lib/justwatch.ts`; we never store full URLs here.
+   */
+  justWatchSlug?: string;
   /**
    * SEO keyword seeds for this show. These mirror real search intent
    * ("random us office episode", "what office episode should i watch") and are

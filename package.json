@@ -8,10 +8,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "check-types": "tsc --noEmit"
+    "check-types": "tsc --noEmit",
+    "fetch:catalogue": "bun scripts/fetch-catalogue.ts",
+    "fetch:catalogue:running": "bun scripts/fetch-catalogue.ts --running-only"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
+    "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.14.0",
@@ -23,6 +26,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
     "@tailwindcss/postcss": "^4.1.5",
+    "@types/bun": "^1.3.14",
     "@types/node": "^22.15.30",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.1",

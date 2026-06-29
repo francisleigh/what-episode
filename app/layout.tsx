@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Doto } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 import { siteConfig } from "@/lib/site";
 import { JsonLd } from "@/components/json-ld";
+import { SiteFooter } from "@/components/site-footer";
 import { websiteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
@@ -61,6 +63,8 @@ export default function RootLayout({
       <body className="min-h-dvh antialiased">
         <JsonLd data={websiteJsonLd()} />
         {children}
+        <SiteFooter />
+        <Analytics />
       </body>
     </html>
   );

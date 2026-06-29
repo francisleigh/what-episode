@@ -92,7 +92,13 @@ export default async function ShowPage({
         </p>
       </header>
 
-      <RandomEpisode episodes={episodes} />
+      {episodes.length > 0 ? (
+        <RandomEpisode episodes={episodes} show={show} />
+      ) : (
+        <p className="max-w-md text-balance text-muted-foreground">
+          We&apos;re still loading the {show.title} episode list — check back soon.
+        </p>
+      )}
 
       {/* On-page FAQ that mirrors the FAQPage JSON-LD — good for users and for
           answer-engine surfaces. */}
