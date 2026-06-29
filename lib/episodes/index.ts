@@ -70,3 +70,32 @@ export function pickRandomEpisode(
   if (episodes.length === 0) return undefined;
   return episodes[Math.floor(rng() * episodes.length)];
 }
+
+/**
+ * Full-random pick: a uniformly-random show, then a uniformly-random episode
+ * within it (so large catalogues don't dominate). `index` maps show slug →
+ * episode slugs (e.g. "s3e4"). `rng` is injectable for deterministic tests,
+ * mirroring `pickRandomEpisode`. Returns null for an empty index.
+ */
+export function pickRandomShowEpisode(
+  index: Record<string, string[]>,
+  rng: () => number = Math.random,
+): { show: string; episode: string } | null {
+  const slugs = Object.keys(index);
+  if (slugs.length === 0) return null;
+  const show = slugs[Math.floor(rng() * slugs.length)];
+  const episodes = index[show];
+  if (!episodes || episodes.length === 0) return null;
+  const episode = episodes[Math.floor(rng() * episodes.length)];
+  return { show, episode };
+}
+
+/**
+ * Compact show→episode-slug index for the full-random pickers. The single
+ * definition shared by the home-page button and the /surprise-me route.
+ */
+export function getEpisodeIndex(): Record<string, string[]> {
+  return Object.fromEntries(
+    getAllShows().map((s) => [s.slug, getEpisodes(s.slug).map(episodeSlug)]),
+  );
+}
