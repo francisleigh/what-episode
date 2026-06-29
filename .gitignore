@@ -3,6 +3,13 @@
 /.pnp
 .pnp.*
 
+# Lockfile is intentionally untracked: local installs run through a private
+# registry proxy and bake non-public tarball URLs into it, which break CI/Vercel
+# builds. Vercel resolves from public npm instead. Regenerate + force-add a clean
+# lockfile only from a machine with direct public-npm access.
+bun.lockb
+bun.lock
+
 # next.js
 /.next/
 /out/
